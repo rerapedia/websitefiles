@@ -2,9 +2,12 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
 function getDbUrl(): string {
-  const url = process.env.DATABASE_URL ?? "";
+  // Use DIRECT_URL for direct connection (no pooler)
+  // Fall back to DATABASE_URL
+  const url = process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? "";
   // Strip Prisma-specific ?schema= param that pg doesn't understand
-  return url.includes("?schema=") ? url.split("?schema=")[0] : url;
+  if (url.includes("?schema=")) return url.split("?schema=")[0];
+  return url;
 }
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
