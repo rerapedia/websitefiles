@@ -66,22 +66,33 @@ export async function getBuilderBySlug(slug: string) {
 }
 
 export async function getStats() {
-  const [projectCount, builderCount, stateCount] = await Promise.all([
-    prisma.project.count({ where: { deletedAt: null } }),
-    prisma.builder.count({ where: { deletedAt: null } }),
-    prisma.state.count({ where: { isActive: true } }),
-  ]);
-  return { projectCount, builderCount, stateCount };
+  try {
+    const [projectCount, builderCount, stateCount] = await Promise.all([
+      prisma.project.count({ where: { deletedAt: null } }),
+      prisma.builder.count({ where: { deletedAt: null } }),
+      prisma.state.count({ where: { isActive: true } }),
+    ]);
+    return { projectCount, builderCount, stateCount };
+  } catch (error) {
+    console.error("getStats error:", error);
+    return { projectCount: 0, builderCount: 0, stateCount: 0 };
+  }
 }
 
 export async function getStates() {
-  return prisma.state.findMany({
-    where: { isActive: true },
-    orderBy: { name: "asc" },
-  });
+  try {
+    return await prisma.state.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    });
+  } catch (error) {
+    console.error("getStates error:", error);
+    return [];
+  }
 }
 
 export async function getRecentProjects(limit = 6) {
+  try {
   const projects = await prisma.project.findMany({
     where: { deletedAt: null },
     include: { state: true, builder: true },
@@ -101,4 +112,8 @@ export async function getRecentProjects(limit = 6) {
     state: p.state,
     builder: p.builder ? { ...p.builder, avgTrustScore: toNum(p.builder.avgTrustScore) } : null,
   }));
+  } catch (error) {
+    console.error("getRecentProjects error:", error);
+    return [];
+  }
 }
