@@ -31,3 +31,4 @@ packages/scrapers/cache/
 
 # Build
 *.tsbuildinfo
+packages/scrapers/.scrapy/
