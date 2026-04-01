@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rerapedia.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  try {
   const [projects, builders, states, localities, blogPosts] = await Promise.all([
     prisma.project.findMany({
       where: { deletedAt: null },
@@ -111,4 +112,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   console.log(`[Sitemap] Generated ${allPages.length} URLs (${projectPages.length} projects, ${builderPages.length} builders, ${blogPages.length} blog, ${comparisonPages.length} comparisons)`);
 
   return allPages;
+
+  } catch (error) {
+    // Database not available during build (e.g., first Vercel deploy)
+    console.log("[Sitemap] Database not available, returning static pages only");
+    return [
+      { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
+      { url: `${SITE_URL}/search`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+      { url: `${SITE_URL}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+      { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    ];
+  }
 }
