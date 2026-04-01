@@ -1,0 +1,725 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model State {
+  id               String     @id @default(uuid()) @db.Uuid
+  name             String     @unique
+  slug             String     @unique
+  reraWebsiteUrl   String?    @map("rera_website_url")
+  scrapeConfigJson Json?      @map("scrape_config_json")
+  isActive         Boolean    @default(true) @map("is_active")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  localities       Locality[]
+  projects         Project[]
+
+  @@map("states")
+}
+
+model Project {
+  id                     String             @id @default(uuid()) @db.Uuid
+  stateId                String             @map("state_id") @db.Uuid
+  builderId              String?            @map("builder_id") @db.Uuid
+  reraRegNumber          String             @map("rera_reg_number")
+  name                   String
+  slug                   String             @unique
+  status                 ProjectStatus      @default(REGISTERED)
+  type                   ProjectType        @default(RESIDENTIAL)
+  locality               String?
+  city                   String?
+  district               String?
+  pincode                String?
+  addressFull            String?            @map("address_full")
+  lat                    Decimal?           @db.Decimal(10, 7)
+  lng                    Decimal?           @db.Decimal(10, 7)
+  totalUnits             Int?               @map("total_units")
+  carpetAreaMin          Decimal?           @map("carpet_area_min") @db.Decimal(10, 2)
+  carpetAreaMax          Decimal?           @map("carpet_area_max") @db.Decimal(10, 2)
+  priceMinPaise          BigInt?            @map("price_min_paise")
+  priceMaxPaise          BigInt?            @map("price_max_paise")
+  possessionDateOriginal DateTime?          @map("possession_date_original")
+  possessionDateRevised  DateTime?          @map("possession_date_revised")
+  reraRegistrationDate   DateTime?          @map("rera_registration_date")
+  reraExpiryDate         DateTime?          @map("rera_expiry_date")
+  completionPercentage   Decimal?           @map("completion_percentage") @db.Decimal(5, 2)
+  trustScore             Decimal?           @map("trust_score") @db.Decimal(5, 2)
+  trustScoreJson         Json?              @map("trust_score_json")
+  lastScrapedAt          DateTime?          @map("last_scraped_at")
+  rawDataJson            Json?              @map("raw_data_json")
+  metadata               Json?
+  seoTitle               String?            @map("seo_title")
+  seoDescription         String?            @map("seo_description")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  deletedAt              DateTime?          @map("deleted_at")
+  complaints             Complaint[]
+  faqs                   Faq[]
+  leads                  Lead[]
+  documents              ProjectDocument[]
+  timeline               ProjectTimeline[]
+  builder                Builder?           @relation(fields: [builderId], references: [id])
+  state                  State              @relation(fields: [stateId], references: [id])
+  reviews                Review[]
+  savedBy                UserSavedProject[]
+
+  @@unique([stateId, reraRegNumber])
+  @@index([stateId])
+  @@index([builderId])
+  @@index([city])
+  @@index([status])
+  @@index([trustScore])
+  @@index([deletedAt])
+  @@map("projects")
+}
+
+model Builder {
+  id                String      @id @default(uuid()) @db.Uuid
+  name              String
+  slug              String      @unique
+  gstin             String?     @unique
+  registeredAddress String?     @map("registered_address")
+  website           String?
+  phone             String?
+  email             String?
+  logoUrl           String?     @map("logo_url")
+  description       String?
+  totalProjects     Int         @default(0) @map("total_projects")
+  avgTrustScore     Decimal?    @map("avg_trust_score") @db.Decimal(5, 2)
+  isClaimed         Boolean     @default(false) @map("is_claimed")
+  claimedByUserId   String?     @map("claimed_by_user_id") @db.Uuid
+  metadata          Json?
+  seoTitle          String?     @map("seo_title")
+  seoDescription    String?     @map("seo_description")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  deletedAt         DateTime?   @map("deleted_at")
+  claimedBy         User?       @relation("BuilderClaimedBy", fields: [claimedByUserId], references: [id])
+  complaints        Complaint[]
+  faqs              Faq[]
+  leads             Lead[]
+  projects          Project[]
+  reviews           Review[]
+
+  @@index([name])
+  @@index([isClaimed])
+  @@index([deletedAt])
+  @@map("builders")
+}
+
+model Locality {
+  id                String   @id @default(uuid()) @db.Uuid
+  stateId           String   @map("state_id") @db.Uuid
+  name              String
+  slug              String
+  city              String
+  lat               Decimal? @db.Decimal(10, 7)
+  lng               Decimal? @db.Decimal(10, 7)
+  avgPriceSqftPaise Int?     @map("avg_price_sqft_paise")
+  totalProjects     Int      @default(0) @map("total_projects")
+  description       String?
+  seoTitle          String?  @map("seo_title")
+  seoDescription    String?  @map("seo_description")
+  metadata          Json?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  state             State    @relation(fields: [stateId], references: [id])
+
+  @@unique([stateId, city, slug])
+  @@index([city])
+  @@map("localities")
+}
+
+model ProjectTimeline {
+  id          String            @id @default(uuid()) @db.Uuid
+  projectId   String            @map("project_id") @db.Uuid
+  eventType   TimelineEventType @map("event_type")
+  oldValue    String?           @map("old_value")
+  newValue    String?           @map("new_value")
+  description String?
+  sourceUrl   String?           @map("source_url")
+  detectedAt  DateTime          @default(now()) @map("detected_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  project     Project           @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+  @@index([eventType])
+  @@index([detectedAt])
+  @@map("project_timeline")
+}
+
+model Complaint {
+  id              String          @id @default(uuid()) @db.Uuid
+  projectId       String          @map("project_id") @db.Uuid
+  builderId       String?         @map("builder_id") @db.Uuid
+  complaintNumber String?         @map("complaint_number")
+  complainantType String?         @map("complainant_type")
+  subject         String?
+  status          ComplaintStatus @default(FILED)
+  filedDate       DateTime?       @map("filed_date")
+  resolvedDate    DateTime?       @map("resolved_date")
+  reraOrderUrl    String?         @map("rera_order_url")
+  metadata        Json?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  builder         Builder?        @relation(fields: [builderId], references: [id])
+  project         Project         @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+  @@index([builderId])
+  @@index([status])
+  @@map("complaints")
+}
+
+model ProjectDocument {
+  id            String   @id @default(uuid()) @db.Uuid
+  projectId     String   @map("project_id") @db.Uuid
+  docType       String   @map("doc_type")
+  fileName      String?  @map("file_name")
+  fileUrl       String   @map("file_url")
+  fileSizeBytes Int?     @map("file_size_bytes")
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  project       Project  @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+  @@map("project_documents")
+}
+
+model User {
+  id                String              @id @default(uuid()) @db.Uuid
+  email             String?             @unique
+  phone             String?             @unique
+  name              String?
+  role              UserRole            @default(PUBLIC)
+  passwordHash      String?             @map("password_hash")
+  avatarUrl         String?             @map("avatar_url")
+  isVerified        Boolean             @default(false) @map("is_verified")
+  isActive          Boolean             @default(true) @map("is_active")
+  metadata          Json?
+  lastLoginAt       DateTime?           @map("last_login_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  deletedAt         DateTime?           @map("deleted_at")
+  googleId          String?             @unique @map("google_id")
+  adCampaigns       AdCampaign[]
+  blogPosts         BlogPost[]
+  claimedBuilders   Builder[]           @relation("BuilderClaimedBy")
+  invoices          Invoice[]
+  leadPurchases     LeadPurchase[]
+  leadsAsBuyer      Lead[]              @relation("LeadBuyer")
+  payouts           Payout[]
+  reviews           Review[]
+  subscriptions     Subscription[]
+  savedProjects     UserSavedProject[]
+  searchHistory     UserSearchHistory[]
+  sessions          UserSession[]
+  verificationCodes VerificationCode[]
+
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model UserSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+
+model UserSavedProject {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  projectId    String   @map("project_id") @db.Uuid
+  alertEnabled Boolean  @default(false) @map("alert_enabled")
+  createdAt    DateTime @default(now()) @map("created_at")
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([userId])
+  @@map("user_saved_projects")
+}
+
+model UserSearchHistory {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  query        String
+  filtersJson  Json?    @map("filters_json")
+  resultsCount Int?     @map("results_count")
+  searchedAt   DateTime @default(now()) @map("searched_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([searchedAt])
+  @@map("user_search_history")
+}
+
+model Plan {
+  id                String         @id @default(uuid()) @db.Uuid
+  name              String
+  slug              String         @unique
+  targetRole        UserRole       @map("target_role")
+  priceMonthlyPaise Int            @map("price_monthly_paise")
+  priceAnnualPaise  Int            @map("price_annual_paise")
+  featuresJson      Json           @map("features_json")
+  isActive          Boolean        @default(true) @map("is_active")
+  sortOrder         Int            @default(0) @map("sort_order")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  subscriptions     Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id                     String             @id @default(uuid()) @db.Uuid
+  userId                 String             @map("user_id") @db.Uuid
+  planId                 String             @map("plan_id") @db.Uuid
+  status                 SubscriptionStatus @default(ACTIVE)
+  razorpaySubscriptionId String?            @unique @map("razorpay_subscription_id")
+  currentPeriodStart     DateTime           @map("current_period_start")
+  currentPeriodEnd       DateTime           @map("current_period_end")
+  autoRenew              Boolean            @default(true) @map("auto_renew")
+  cancelledAt            DateTime?          @map("cancelled_at")
+  metadata               Json?
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  plan                   Plan               @relation(fields: [planId], references: [id])
+  user                   User               @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Lead {
+  id               String         @id @default(uuid()) @db.Uuid
+  sourcePage       String?        @map("source_page")
+  sourceType       LeadSourceType @map("source_type")
+  projectId        String?        @map("project_id") @db.Uuid
+  builderId        String?        @map("builder_id") @db.Uuid
+  buyerUserId      String?        @map("buyer_user_id") @db.Uuid
+  buyerName        String         @map("buyer_name")
+  buyerPhone       String         @map("buyer_phone")
+  buyerEmail       String?        @map("buyer_email")
+  propertyInterest String?        @map("property_interest")
+  budgetRangePaise Json?          @map("budget_range_paise")
+  message          String?
+  status           LeadStatus     @default(NEW)
+  metadata         Json?
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  purchases        LeadPurchase[]
+  builder          Builder?       @relation(fields: [builderId], references: [id])
+  buyerUser        User?          @relation("LeadBuyer", fields: [buyerUserId], references: [id])
+  project          Project?       @relation(fields: [projectId], references: [id])
+
+  @@index([buyerPhone])
+  @@index([projectId])
+  @@index([builderId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+model LeadPurchase {
+  id                String   @id @default(uuid()) @db.Uuid
+  leadId            String   @map("lead_id") @db.Uuid
+  purchasedByUserId String   @map("purchased_by_user_id") @db.Uuid
+  pricePaidPaise    Int      @map("price_paid_paise")
+  purchasedAt       DateTime @default(now()) @map("purchased_at")
+  lead              Lead     @relation(fields: [leadId], references: [id])
+  purchasedBy       User     @relation(fields: [purchasedByUserId], references: [id])
+
+  @@index([leadId])
+  @@index([purchasedByUserId])
+  @@map("lead_purchases")
+}
+
+model AdCampaign {
+  id               String           @id @default(uuid()) @db.Uuid
+  advertiserUserId String           @map("advertiser_user_id") @db.Uuid
+  campaignName     String           @map("campaign_name")
+  adType           AdType           @map("ad_type")
+  budgetTotalPaise Int              @map("budget_total_paise")
+  budgetDailyPaise Int?             @map("budget_daily_paise")
+  spentPaise       Int              @default(0) @map("spent_paise")
+  cpcBidPaise      Int?             @map("cpc_bid_paise")
+  cpmBidPaise      Int?             @map("cpm_bid_paise")
+  status           AdCampaignStatus @default(DRAFT)
+  startDate        DateTime?        @map("start_date")
+  endDate          DateTime?        @map("end_date")
+  targetStates     Json?            @map("target_states")
+  targetCities     Json?            @map("target_cities")
+  targetLocalities Json?            @map("target_localities")
+  metadata         Json?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  deletedAt        DateTime?        @map("deleted_at")
+  advertiser       User             @relation(fields: [advertiserUserId], references: [id])
+  clicks           AdClick[]
+  creatives        AdCreative[]
+  impressions      AdImpression[]
+
+  @@index([advertiserUserId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("ad_campaigns")
+}
+
+model AdCreative {
+  id             String         @id @default(uuid()) @db.Uuid
+  campaignId     String         @map("campaign_id") @db.Uuid
+  imageUrl       String?        @map("image_url")
+  headline       String?
+  description    String?
+  ctaText        String?        @map("cta_text")
+  destinationUrl String         @map("destination_url")
+  isApproved     Boolean        @default(false) @map("is_approved")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  clicks         AdClick[]
+  campaign       AdCampaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  impressions    AdImpression[]
+
+  @@index([campaignId])
+  @@map("ad_creatives")
+}
+
+model AdImpression {
+  id         String     @id @default(uuid()) @db.Uuid
+  campaignId String     @map("campaign_id") @db.Uuid
+  creativeId String     @map("creative_id") @db.Uuid
+  pageUrl    String?    @map("page_url")
+  userId     String?    @map("user_id") @db.Uuid
+  ipAddress  String?    @map("ip_address")
+  timestamp  DateTime   @default(now())
+  clicks     AdClick[]
+  campaign   AdCampaign @relation(fields: [campaignId], references: [id])
+  creative   AdCreative @relation(fields: [creativeId], references: [id])
+
+  @@index([campaignId])
+  @@index([creativeId])
+  @@index([timestamp])
+  @@map("ad_impressions")
+}
+
+model AdClick {
+  id           String       @id @default(uuid()) @db.Uuid
+  impressionId String       @map("impression_id") @db.Uuid
+  campaignId   String       @map("campaign_id") @db.Uuid
+  creativeId   String       @map("creative_id") @db.Uuid
+  userId       String?      @map("user_id") @db.Uuid
+  ipAddress    String?      @map("ip_address")
+  timestamp    DateTime     @default(now())
+  campaign     AdCampaign   @relation(fields: [campaignId], references: [id])
+  creative     AdCreative   @relation(fields: [creativeId], references: [id])
+  impression   AdImpression @relation(fields: [impressionId], references: [id])
+
+  @@index([campaignId])
+  @@index([impressionId])
+  @@index([timestamp])
+  @@map("ad_clicks")
+}
+
+model Invoice {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  invoiceNumber     String        @unique @map("invoice_number")
+  amountPaise       Int           @map("amount_paise")
+  taxGstPaise       Int           @default(0) @map("tax_gst_paise")
+  totalPaise        Int           @map("total_paise")
+  status            InvoiceStatus @default(DRAFT)
+  razorpayPaymentId String?       @map("razorpay_payment_id")
+  description       String?
+  issuedAt          DateTime?     @map("issued_at")
+  dueAt             DateTime?     @map("due_at")
+  paidAt            DateTime?     @map("paid_at")
+  pdfUrl            String?       @map("pdf_url")
+  metadata          Json?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  user              User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model Payout {
+  id              String       @id @default(uuid()) @db.Uuid
+  userId          String       @map("user_id") @db.Uuid
+  amountPaise     Int          @map("amount_paise")
+  method          PayoutMethod
+  status          PayoutStatus @default(PENDING)
+  referenceNumber String?      @map("reference_number")
+  metadata        Json?
+  initiatedAt     DateTime     @default(now()) @map("initiated_at")
+  completedAt     DateTime?    @map("completed_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  user            User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("payouts")
+}
+
+model BlogPost {
+  id               String         @id @default(uuid()) @db.Uuid
+  title            String
+  slug             String         @unique
+  contentHtml      String?        @map("content_html")
+  authorId         String         @map("author_id") @db.Uuid
+  category         String?
+  tags             Json?
+  language         String         @default("en")
+  seoTitle         String?        @map("seo_title")
+  seoDescription   String?        @map("seo_description")
+  featuredImageUrl String?        @map("featured_image_url")
+  status           BlogPostStatus @default(DRAFT)
+  publishedAt      DateTime?      @map("published_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  author           User           @relation(fields: [authorId], references: [id])
+
+  @@index([status])
+  @@index([category])
+  @@index([publishedAt])
+  @@index([deletedAt])
+  @@map("blog_posts")
+}
+
+model Faq {
+  id         String   @id @default(uuid()) @db.Uuid
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id") @db.Uuid
+  projectId  String?  @map("project_id") @db.Uuid
+  builderId  String?  @map("builder_id") @db.Uuid
+  question   String
+  answer     String
+  language   String   @default("en")
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  builder    Builder? @relation(fields: [builderId], references: [id])
+  project    Project? @relation(fields: [projectId], references: [id])
+
+  @@index([entityType, entityId])
+  @@map("faqs")
+}
+
+model Review {
+  id              String       @id @default(uuid()) @db.Uuid
+  projectId       String?      @map("project_id") @db.Uuid
+  builderId       String?      @map("builder_id") @db.Uuid
+  userId          String       @map("user_id") @db.Uuid
+  rating          Int
+  title           String?
+  content         String?
+  isVerifiedBuyer Boolean      @default(false) @map("is_verified_buyer")
+  status          ReviewStatus @default(PENDING)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  deletedAt       DateTime?    @map("deleted_at")
+  builder         Builder?     @relation(fields: [builderId], references: [id])
+  project         Project?     @relation(fields: [projectId], references: [id])
+  user            User         @relation(fields: [userId], references: [id])
+
+  @@index([projectId])
+  @@index([builderId])
+  @@index([userId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("reviews")
+}
+
+model SeoPage {
+  id              String      @id @default(uuid()) @db.Uuid
+  pageType        SeoPageType @map("page_type")
+  slug            String      @unique
+  title           String
+  metaDescription String?     @map("meta_description")
+  contentHtml     String?     @map("content_html")
+  schemaJson      Json?       @map("schema_json")
+  canonicalUrl    String?     @map("canonical_url")
+  language        String      @default("en")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  @@index([pageType])
+  @@map("seo_pages")
+}
+
+model VerificationCode {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String?   @map("user_id") @db.Uuid
+  email     String?
+  phone     String?
+  code      String
+  type      String
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([email, code], map: "idx_vc_email_code")
+  @@index([expiresAt], map: "idx_vc_expires")
+  @@index([phone, code], map: "idx_vc_phone_code")
+  @@map("verification_codes")
+}
+
+enum UserRole {
+  PUBLIC
+  BUYER
+  BUILDER
+  BROKER
+  ADMIN
+}
+
+enum ProjectStatus {
+  REGISTERED
+  UNDER_CONSTRUCTION
+  COMPLETED
+  LAPSED
+  REVOKED
+  EXTENDED
+}
+
+enum ProjectType {
+  RESIDENTIAL
+  COMMERCIAL
+  MIXED
+  PLOTTED
+  TOWNSHIP
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  TRIALING
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+  SPAM
+}
+
+enum LeadSourceType {
+  PROJECT_PAGE
+  BUILDER_PAGE
+  LOCALITY_PAGE
+  SEARCH_PAGE
+  BLOG_POST
+  COMPARISON_PAGE
+  WHATSAPP
+  LEAD_MAGNET
+  CONTACT_FORM
+}
+
+enum AdType {
+  BANNER_728x90
+  SIDEBAR_300x250
+  IN_CONTENT_NATIVE
+  SEARCH_SPONSORED
+  BUILDER_PROFILE_AD
+  LOCALITY_FEATURED
+  FOOTER_MOBILE_320x50
+}
+
+enum AdCampaignStatus {
+  DRAFT
+  PENDING_APPROVAL
+  ACTIVE
+  PAUSED
+  COMPLETED
+  REJECTED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PayoutMethod {
+  BANK_TRANSFER
+  UPI
+  RAZORPAY
+}
+
+enum BlogPostStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+enum ComplaintStatus {
+  FILED
+  HEARING_SCHEDULED
+  ORDER_PASSED
+  RESOLVED
+  DISMISSED
+  APPEALED
+}
+
+enum TimelineEventType {
+  STATUS_CHANGE
+  DEADLINE_EXTENSION
+  COMPLETION_UPDATE
+  COMPLAINT_FILED
+  COMPLAINT_RESOLVED
+  DOCUMENT_UPLOADED
+  REGISTRATION_RENEWED
+  PRICE_CHANGE
+  RERA_ORDER
+  NEW_PHASE_ADDED
+}
+
+enum SeoPageType {
+  STATE_HUB
+  CITY_HUB
+  COMPARISON
+  KEYWORD_LANDING
+  GUIDE
+}

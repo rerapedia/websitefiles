@@ -1,0 +1,117 @@
+{
+  "common": {
+    "siteName": "ReraPedia",
+    "tagline": "India's RERA Transparency Platform",
+    "search": "Search",
+    "home": "Home",
+    "states": "States",
+    "about": "About",
+    "builders": "Builders",
+    "projects": "Projects",
+    "viewAll": "View All",
+    "na": "N/A",
+    "loading": "Loading..."
+  },
+  "hero": {
+    "title": "Check Any RERA Project's Trust Score",
+    "subtitle": "Search 3,200+ projects across 5 states — Haryana, Delhi, UP, Maharashtra & Karnataka. Verify builders, track construction, and make informed property decisions.",
+    "searchPlaceholder": "Search by project name, builder, or RERA number..."
+  },
+  "stats": {
+    "projects": "RERA Projects",
+    "builders": "Builders Tracked",
+    "states": "States Covered"
+  },
+  "exploreStates": {
+    "title": "Explore by State",
+    "subtitle": "Browse RERA registered projects by state"
+  },
+  "trustScore": {
+    "title": "How Trust Scores Work",
+    "subtitle": "Our proprietary 8-dimension scoring system rates every RERA project from 0 to 100",
+    "excellent": "Excellent",
+    "reliable": "Reliable",
+    "average": "Average",
+    "concerning": "Concerning",
+    "highRisk": "High Risk",
+    "delivery": "Delivery Track Record",
+    "deliveryDesc": "Completion percentage vs timeline, deadline extensions, phase delivery",
+    "documents": "Document Compliance",
+    "documentsDesc": "Required documents uploaded, QPR submissions, audit reports",
+    "legalRisk": "Legal Risk",
+    "legalRiskDesc": "Complaints filed, resolution rate, RERA orders against the project",
+    "financial": "Financial Transparency",
+    "financialDesc": "Bank account verification, financial statement submissions",
+    "registration": "Registration Quality",
+    "registrationDesc": "Timely renewals, information completeness and accuracy",
+    "builderHistory": "Builder History",
+    "builderHistoryDesc": "Builder's track record across ALL their projects — unique to ReraPedia",
+    "neighbourhood": "Neighbourhood Quality",
+    "neighbourhoodDesc": "Metro proximity, schools, hospitals, air quality index",
+    "marketConfidence": "Market Confidence",
+    "marketConfidenceDesc": "Agent network activity, search interest trends, price movement"
+  },
+  "project": {
+    "trustScore": "Trust Score",
+    "reraNumber": "RERA Number",
+    "builder": "Builder",
+    "status": "Status",
+    "projectType": "Project Type",
+    "location": "Location",
+    "totalUnits": "Total Units",
+    "carpetArea": "Carpet Area",
+    "priceRange": "Price Range",
+    "possessionDate": "Possession Date",
+    "possessionRevised": "Revised Possession",
+    "registrationDate": "Registration Date",
+    "expiryDate": "Registration Expiry",
+    "completion": "Completion",
+    "timeline": "Project Timeline",
+    "faqs": "Frequently Asked Questions",
+    "noTimeline": "No timeline events recorded yet",
+    "disclaimer": "Data sourced from public RERA records. Verify independently before making investment decisions.",
+    "recentlyAdded": "Recently Added Projects"
+  },
+  "builder": {
+    "avgScore": "Average Trust Score",
+    "totalProjects": "Total Projects",
+    "projects": "Projects by This Builder",
+    "claimProfile": "Claim This Profile",
+    "claimDescription": "Are you this builder? Claim your profile to manage your reputation, respond to reviews, and access analytics.",
+    "website": "Website",
+    "contact": "Contact"
+  },
+  "search": {
+    "title": "Search RERA Projects",
+    "placeholder": "Search projects, builders, or localities...",
+    "noResults": "No projects found. Try a different search term.",
+    "filters": "Filters",
+    "state": "State",
+    "city": "City",
+    "scoreRange": "Trust Score",
+    "projectStatus": "Status",
+    "allStates": "All States",
+    "allStatuses": "All Statuses",
+    "results": "results found"
+  },
+  "leadForm": {
+    "title": "Interested in this project?",
+    "subtitle": "Get a callback from our team",
+    "name": "Your Name",
+    "phone": "Mobile Number",
+    "namePlaceholder": "Enter your full name",
+    "phonePlaceholder": "10-digit mobile number",
+    "submit": "Get Callback",
+    "success": "Thank you! We'll call you shortly.",
+    "duplicate": "You've already submitted interest. We'll be in touch!",
+    "error": "Something went wrong. Please try again."
+  },
+  "footer": {
+    "disclaimer": "Data sourced from public RERA records. This platform is not affiliated with any government RERA authority. Verify all information independently before making investment decisions.",
+    "copyright": "© 2026 ReraPedia. All rights reserved.",
+    "stateLinks": "RERA by State",
+    "company": "Company",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  }
+}

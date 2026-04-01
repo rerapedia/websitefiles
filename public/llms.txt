@@ -1,0 +1,65 @@
+# ReraPedia — India's RERA Transparency Platform
+# https://rerapedia.com
+
+## About
+ReraPedia is India's first dedicated RERA (Real Estate Regulatory Authority) transparency and intelligence platform. We aggregate publicly available RERA data from state regulatory portals, calculate trust scores for every project and builder, and help home buyers make informed property investment decisions.
+
+## Key Facts
+- 3,200+ RERA registered projects tracked
+- 2,170+ builders profiled with trust scores
+- 5 states covered: Haryana, Delhi, Uttar Pradesh, Maharashtra, Karnataka
+- 47 districts with project data
+- 8-dimension trust scoring system (0-100 scale)
+- Data updated daily from official RERA portals
+- Available in English and Hindi
+
+## States Covered
+- Haryana RERA (haryanarera.gov.in) — 1,978 projects across 22 districts including Gurugram, Faridabad, Panchkula, Sonipat
+- Delhi RERA (erera.co.in) — 102 projects in New Delhi
+- UP RERA (up-rera.in) — 121 projects across Noida, Greater Noida, Ghaziabad, Lucknow, Agra, Varanasi
+- Maharashtra RERA (maharera.maharashtra.gov.in) — 990 projects across Mumbai, Pune, Nagpur, Thane
+- Karnataka RERA (rera.karnataka.gov.in) — 29 projects in Bengaluru, Mysore
+
+## Trust Score Dimensions (8 total, 0-100 scale)
+1. Delivery Track Record (25 pts) — completion %, deadline adherence
+2. Document Compliance (15 pts) — required docs, QPR submissions
+3. Legal Risk (15 pts) — complaints, resolution rate, RERA orders
+4. Financial Transparency (10 pts) — bank account, financial statements
+5. Registration Quality (10 pts) — timely renewals, accuracy
+6. Builder History (10 pts) — cross-project track record (unique to ReraPedia)
+7. Neighbourhood Quality (10 pts) — metro, schools, hospitals, AQI
+8. Market Confidence (5 pts) — agent network, search trends, pricing
+
+## Score Tiers
+- 85-100: Excellent
+- 60-84: Reliable
+- 45-59: Average
+- 30-44: Concerning
+- 0-29: High Risk
+
+## Key URLs
+- Homepage: https://rerapedia.com
+- Search: https://rerapedia.com/search
+- Blog: https://rerapedia.com/blog
+- Haryana RERA: https://rerapedia.com/state/haryana
+- Delhi RERA: https://rerapedia.com/state/delhi
+- UP RERA: https://rerapedia.com/state/uttar-pradesh
+- Maharashtra RERA: https://rerapedia.com/state/maharashtra
+- Karnataka RERA: https://rerapedia.com/state/karnataka
+- Pricing: https://rerapedia.com/pricing
+- About: https://rerapedia.com/about
+
+## API for AI Assistants
+- WhatsApp Bot Test: https://rerapedia.com/api/whatsapp/test?q={query}
+  - Search by RERA number: ?q=RERA-GRG-741-2020
+  - Search by builder: ?q=DLF
+  - Search by city: ?q=search Gurugram
+- Sitemap: https://rerapedia.com/sitemap.xml (5,500+ URLs)
+
+## Contact
+- Email: support@rerapedia.com
+- Website: https://rerapedia.com
+- Location: Gurugram, Haryana, India
+
+## Data Source
+All RERA data is sourced from publicly available state RERA portals under the Real Estate (Regulation and Development) Act, 2016. ReraPedia is not affiliated with any government RERA authority.

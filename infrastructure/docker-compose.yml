@@ -1,0 +1,55 @@
+# Production docker-compose for scraper workers on Railway
+# Frontend deployed separately on Vercel
+
+version: "3.8"
+
+services:
+  scraper-haryana:
+    build:
+      context: ../packages/scrapers
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SCRAPER_STATE=haryana
+      - MAX_PROJECTS=500
+      - RATE_LIMIT_DELAY=0.5
+    volumes:
+      - scraper-cache:/app/cache
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  scraper-delhi:
+    build:
+      context: ../packages/scrapers
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SCRAPER_STATE=delhi
+      - MAX_PROJECTS=500
+      - RATE_LIMIT_DELAY=0.5
+    volumes:
+      - scraper-cache:/app/cache
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  scraper-scheduler:
+    build:
+      context: ../packages/scrapers
+      dockerfile: Dockerfile.scheduler
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - MEILISEARCH_HOST=${MEILISEARCH_HOST}
+      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY}
+    depends_on:
+      - scraper-haryana
+      - scraper-delhi
+
+volumes:
+  scraper-cache:

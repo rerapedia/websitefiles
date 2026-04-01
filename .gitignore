@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+packages/scrapers/venv/
+
+# Next.js
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+
+# Prisma
+generated/
+
+# Scraper output
+packages/scrapers/output/
+packages/scrapers/cache/
+
+# Build
+*.tsbuildinfo

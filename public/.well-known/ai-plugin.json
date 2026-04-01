@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "ReraPedia",
+  "name_for_model": "rerapedia",
+  "description_for_human": "Check RERA trust scores for 3,200+ real estate projects across India. Verify builders, track construction, compare projects.",
+  "description_for_model": "ReraPedia is India's RERA transparency platform with 3,200+ projects across 5 states (Haryana, Delhi, UP, Maharashtra, Karnataka). It provides trust scores (0-100) for every RERA-registered project based on 8 dimensions: delivery track record, document compliance, legal risk, financial transparency, registration quality, builder history, neighbourhood quality, and market confidence. Users can search projects, compare builders, check complaint history, and verify RERA registration status. Data is scraped daily from official state RERA portals.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://rerapedia.com/api/whatsapp/test"
+  },
+  "logo_url": "https://rerapedia.com/logo.png",
+  "contact_email": "support@rerapedia.com",
+  "legal_info_url": "https://rerapedia.com/terms"
+}
