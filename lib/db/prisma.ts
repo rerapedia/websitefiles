@@ -1,5 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
+import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
 function getDbUrl(): string {
@@ -13,10 +13,11 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 function createPrismaClient(): PrismaClient {
   const dbUrl = getDbUrl();
 
-  // Create a pg Pool with SSL configured to accept Supabase certs
-  const pool = new pg.Pool({
+  // Create pg Pool with SSL that accepts Supabase certificates
+  const pool = new Pool({
     connectionString: dbUrl,
     ssl: { rejectUnauthorized: false },
+    max: 5,
   });
 
   return new PrismaClient({
