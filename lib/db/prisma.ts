@@ -1,3 +1,9 @@
+// Disable TLS certificate verification for Supabase connection
+// Must be set BEFORE any database connection is created
+if (typeof process !== "undefined") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
@@ -13,7 +19,6 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 function createPrismaClient(): PrismaClient {
   const dbUrl = getDbUrl();
 
-  // Create pg Pool with SSL that accepts Supabase certificates
   const pool = new Pool({
     connectionString: dbUrl,
     ssl: { rejectUnauthorized: false },
